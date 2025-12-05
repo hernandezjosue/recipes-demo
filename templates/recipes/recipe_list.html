@@ -1,0 +1,94 @@
+<!-- templates/recipes/recipe_list.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Recetas facetadas</title>
+</head>
+<body>
+<h1>Recetas</h1>
+
+<div style="display: flex; gap: 2rem;">
+    <!-- Panel de filtros por facetas + buscador -->
+    <aside style="width: 25%;">
+        <h2>Filtros</h2>
+
+        <!-- Buscador por texto -->
+        <form method="get" style="margin-bottom: 1rem;">
+            <label for="id_q"><strong>Buscar recetas</strong></label><br>
+            <input type="text"
+                   id="id_q"
+                   name="q"
+                   value="{{ query }}"
+                   placeholder="Ej. pollo, pastel, horneado"
+                   style="width: 100%; box-sizing: border-box;">
+
+            {# Mantener términos ya marcados al buscar de nuevo #}
+            {% for term_id in selected_term_ids %}
+                <input type="hidden" name="term" value="{{ term_id }}">
+            {% endfor %}
+
+            <button type="submit" style="margin-top: 0.5rem;">Buscar</button>
+        </form>
+
+        <!-- Filtros por facetas -->
+        <form method="get">
+            {# Mantener el texto de búsqueda cuando cambias facetas #}
+            {% if query %}
+                <input type="hidden" name="q" value="{{ query }}">
+            {% endif %}
+
+            {% for facet in facets %}
+                <section style="margin-bottom: 1rem;">
+                    <h3>{{ facet.name }} jnkn</h3>
+
+                    {% for term in facet.terms.all %}
+                        {% if not term.parent %}
+                            <label style="display: block; margin-left: 0;">
+                                <input type="checkbox"
+                                       name="term"
+                                       value="{{ term.id }}"
+                                       {% if term.id in selected_term_ids %}checked{% endif %}>
+                                {{ term.name }}
+                            </label>
+
+                            {% for child in term.children.all %}
+                                <label style="display: block; margin-left: 1.5em;">
+                                    <input type="checkbox"
+                                           name="term"
+                                           value="{{ child.id }}"
+                                           {% if child.id in selected_term_ids %}checked{% endif %}>
+                                    {{ child.name }}
+                                </label>
+                            {% endfor %}
+                        {% endif %}
+                    {% empty %}
+                        <p><em>Sin términos.</em></p>
+                    {% endfor %}
+                </section>
+            {% endfor %}
+            <button type="submit">Aplicar filtros</button>
+        </form>
+    </aside>
+
+    <!-- Lista de recetas -->
+    <main style="flex: 1;">
+        {% for recipe in recipes %}
+            <article style="margin-bottom: 1.5rem;">
+                <h2>
+                    <a href="{% url 'recipes:recipe_detail' recipe.slug %}">
+                        {{ recipe.title }}
+                    </a>
+                </h2>
+                {% if recipe.image %}
+                    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="max-width: 200px;">
+                {% endif %}
+                <p>{{ recipe.description|truncatewords:30 }}</p>
+            </article>
+        {% empty %}
+            <p>No se encontraron recetas con estos filtros.</p>
+        {% endfor %}
+    </main>
+</div>
+</body>
+</html>

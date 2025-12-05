@@ -1,0 +1,36 @@
+<!-- templates/recipes/recipe_detail.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>{{ recipe.title }}</title>
+</head>
+<body>
+<a href="{% url 'recipes:recipe_list' %}">← Volver a la lista</a>
+<h1>{{ recipe.title }}</h1>
+
+{% if recipe.image %}
+    <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="max-width: 400px;">
+{% endif %}
+
+<h2>Ingredientes</h2>
+<p style="white-space: pre-line;">{{ recipe.ingredients_text }}</p>
+
+<h2>Instrucciones</h2>
+<p style="white-space: pre-line;">{{ recipe.instructions }}</p>
+
+<h2>Facetas </h2>
+<ul>
+    {% for facet, terms in facet_terms.items %}
+        <li>
+            <strong>{{ facet.name }}:</strong>
+            {% for term in terms %}
+                {{ term.name }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </li>
+    {% empty %}
+        <li><em>Sin etiquetas aún.</em></li>
+    {% endfor %}
+</ul>
+</body>
+</html>
