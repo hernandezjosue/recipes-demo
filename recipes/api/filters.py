@@ -10,6 +10,19 @@ def get_descendant_term_ids(root_ids: list[int]) -> list[int]:
     Dado un conjunto de IDs de términos raíz, devuelve esos IDs
     + todos los descendientes (hijos, nietos, etc.).
 
+    Usa BFS (Breadth-First Search) para expandir el árbol de términos.
+    Optimizado para reducir queries a la base de datos (N+1 prevention).
+
+    Args:
+        root_ids: Lista de IDs de términos a expandir
+
+    Returns:
+        Lista de IDs incluyendo raíces y todos sus descendientes
+
+    Ejemplo:
+        >>> get_descendant_term_ids([3])  # Postre
+        [3, 4, 6]  # Postre, pastel, panque
+
     Se mantiene independiente del FilterSet (SRP).
     """
     expanded_ids: set[int] = set(int(tid) for tid in root_ids)

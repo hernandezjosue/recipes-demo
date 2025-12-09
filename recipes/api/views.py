@@ -8,7 +8,11 @@ from recipes.api.serializer import (
     TaxonomySerializer,
     FacetSerializer,
     TermSerializer,
-    RecipeTermSerializer, TermTreeSerializer, RecipeListSerializer, RecipeDetailSerializer,
+    RecipeTermSerializer,
+    TermTreeSerializer,
+    RecipeListSerializer,
+    RecipeDetailSerializer,
+    FacetTermsTreeSerializer,
 )
 
 
@@ -28,6 +32,48 @@ class TermTreeViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Term.objects.filter(parent__isnull=True).order_by("facet", "order", "name")
     serializer_class = TermTreeSerializer
+
+class FacetTermsTreeViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet que devuelve facetas con sus términos agrupados jerárquicamente.
+
+    Endpoint: /api/facets-terms-tree/
+
+    Estructura de respuesta:
+    [
+        {
+            "id": 1,
+            "name": "Tipo de plato",
+            "description": "...",
+            "order": 1,
+            "terms": [
+                {
+                    "id": 1,
+                    "name": "Entrada",
+                    "description": "...",
+                    "order": 10,
+                    "children": []
+                },
+                ...
+            ]
+        },
+        {
+            "id": 2,
+            "name": "Dificultad",
+            "description": "...",
+            "order": 2,
+            "terms": [...]
+        }
+    ]
+
+    Cumple SRP: responsable únicamente de exponer facetas agrupadas.
+    ReadOnly porque es para lectura/filtrado, no para modificación.
+    """
+    queryset = Facet.objects.prefetch_related(
+        "terms"
+    ).order_by("order", "name")
+    serializer_class = FacetTermsTreeSerializer
+
 
 
 class TermViewSet(viewsets.ModelViewSet):

@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.text import slugify
 
+from .utils import generate_recipe_image_filename
+
 
 # Create your models here.
 # recipes/models.py
@@ -125,9 +127,10 @@ class Recipe(models.Model):
     )
     image = models.ImageField(
         "Imagen principal",
-        upload_to="recipes/",
+        upload_to=generate_recipe_image_filename,
         blank=True,
         null=True,
+        help_text="Imagen principal de la receta. Se renombrará automáticamente.",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

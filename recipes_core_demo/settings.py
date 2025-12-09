@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure-32pk#4rh%76280i%^_q45gz)#1*s3lp6$4eb&mkgmgh^%f4u$@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# Configuración para que Django use localhost en lugar de 127.0.0.1
+# Esto ayuda con Next.js Image Optimization
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.vercel.app']
 
 
 # Application definition
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',  # Agregar antes de las apps propias
     'recipes',
     'rest_framework',
     'django_filters'
@@ -45,6 +48,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # Debe ir antes de CommonMiddleware
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -136,3 +140,22 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# CORS Configuration
+# Permite peticiones desde el frontend de Next.js en desarrollo
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+# Para desarrollo: permite que Next.js Image Optimization acceda a las imágenes
+# El optimizador de Next.js hace peticiones server-side que necesitan CORS
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Permite cookies/credenciales en peticiones CORS
+CORS_ALLOW_CREDENTIALS = True
+
+# Permite todos los encabezados y métodos para desarrollo
+CORS_ALLOW_HEADERS = ['*']
+CORS_ALLOW_METHODS = ['*']
+
